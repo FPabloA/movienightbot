@@ -6,8 +6,8 @@ from random import randint
 class Spinner(pygame.sprite.Sprite):
     def __init__(self, x, y):
         pygame.sprite.Sprite.__init__(self)
-        self.original_image = pygame.image.load('temp_spinner.png')
-        self.image = pygame.image.load('temp_spinner.png')
+        self.original_image = pygame.image.load('temp_spinner.png').convert_alpha()
+        self.image = self.original_image
         #self.image = pygame.transform.rotate(self.original_image, randint(0, 359))
         self.rect = self.image.get_rect()
         self.rect.center = (x,y)
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     clock = pygame.time.Clock()
     n_frames = 150
 
-    bg = pygame.image.load("MovieWheelBG.png")
+    #bg = pygame.image.load("MovieWheelBG.png")
 
     all_sprites = pygame.sprite.Group()
     spinner = Spinner(250,250)
@@ -56,7 +56,7 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 running = False
         screen.fill((255, 255, 255))
-        screen.blit(bg, (0,0))
+        #screen.blit(bg, (0,0))
         spinner.spinning = True
         #save frame
         all_sprites.update()
