@@ -7,7 +7,7 @@ labelz = ['test', 'trial', 'practice', 'exercise', 'rehearse']
 values = [20,20,20,20,20]
 
 if __name__ == "__main__":
-    fig = plt.figure(figsize=(5,5))
+    fig = plt.figure(figsize=(6,6))
     patches, txts = plt.pie(values, labels = labelz, labeldistance=0.8)
     for t in txts:
         t.set_horizontalalignment('center')
