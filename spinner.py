@@ -1,86 +1,117 @@
 import pygame
+from pygame import gfxdraw
 from pygame_recorder import PygameRecord
-from random import randint
+import random
+import math
 
-#hard coding list now for test purposes
-labelz = ['test', 'trial', 'practice', 'exercise', 'rehearse']
-values = [20,20,20,20,20]
+#adapting code from Itisz DecisionWheel: https://github.com/ltisz/DecisionWheel
+valueList = ["test", "rehersal", "trial", "practice", "experiment", 'one', 'two']
 
-#class adapted from u/WuxiaScrub on r/pygame post
-class Spinner(pygame.sprite.Sprite):
-    def __init__(self, x, y):
-        pygame.sprite.Sprite.__init__(self)
-        self.original_image = pygame.image.load('temp_spinner.png').convert_alpha()
-        self.image = self.original_image
-        #self.image = pygame.transform.rotate(self.original_image, randint(0, 359))
-        self.rect = self.image.get_rect()
-        self.rect.center = (x,y)
-        self.x = x
-        self.y = y
-        self.rotation_speed = randint(15, 30)
+class Spinner():
+    def __init__(self):
+        self.degrees = 0
+        self.surf = surf = pygame.Surface((100,100))
+        self.surf.fill((255,255,255))
+        self.surf.set_colorkey((255,255,255))
+        self.surf = pygame.image.load('cool.png').convert_alpha()
+        self.where = 180, 10
+        self.rotation_speed = random.randint(15,30)
         self.last_animated = 0
-        self.total_degrees_spun = 0
-        self.spinning = False
-
-    def update(self):
-        if self.spinning:
-            self.spin()
     
-    def spin(self):
+    def update(self, screen):
+        self.blittedRect = screen.blit(self.surf, self.where)
+
+    def rotate(self, screen):
         now = pygame.time.get_ticks()
-        if now -self.last_animated > 50:
-            self.image = pygame.transform.rotate(self.original_image, self.total_degrees_spun)
-            self.rect = self.image.get_rect(center=(self.x, self.y))
-            self.total_degrees_spun += self.rotation_speed
+        if now - self.last_animated > 50:
+            self.oldCenter = self.blittedRect.center
+            rotatedSurf = pygame.transform.rotate(self.surf, self.degrees)
+
+            self.rotRect = rotatedSurf.get_rect()
+            self.rotRect.center = self.oldCenter
+            self.degrees += self.rotation_speed
             self.rotation_speed -= .1
-            if self.rotation_speed <=0:
-                self.spinning = False
-                self.rotation_speed = randint(15, 25)
 
-def getWinner(degrees):
-    sliceAngle = 360.0/len(labelz)
-    moddegrees = degrees % 360
-    print(moddegrees)
-    print(moddegrees / sliceAngle)
-    print(moddegrees // sliceAngle)
-
+            screen.blit(rotatedSurf, self.rotRect)
+            if self.rotation_speed <= 0:
+                #do more complex quit process
+                return False
+            return True
 if __name__ == "__main__":
     FPS = 24
     #init pygame & recorder
     recorder = PygameRecord('output.gif', FPS)
     pygame.init()
 
-    screen = pygame.display.set_mode((600,600))
-    running = True
+    font = pygame.font.SysFont(None, 28)
+
+    screen = pygame.display.set_mode((400,400))
+    
+    spinner = Spinner()
+
     clock = pygame.time.Clock()
     n_frames = 150
 
-    bg = pygame.image.load("MovieWheelBG.png")
+    resultlist = []
 
-    all_sprites = pygame.sprite.Group()
-    spinner = Spinner(300,300)
-    all_sprites.add(spinner)
+    running = True
+    cx = cy = r = 200
+    dividers = len(valueList)
+    radconv = math.pi/180
+    divs = int(360/dividers)
     
+    #can maybe improve this by scrambling then popping from end?
+    for i in range(len(valueList)):
+        resultlist.append(random.choice(valueList))
+        valueList.remove(resultlist[i])
+
     while running:
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-        screen.fill((255, 255, 255))
-        screen.blit(bg, (0,0))
-        spinner.spinning = True
-        #save frame
-        all_sprites.update()
-        all_sprites.draw(screen)  
-        pygame.display.update()
+
+        pygame.display.flip()
+        screen.fill([255,255,255])
+
+        spinner.update(screen)
+        
+        screen.fill([255,255,255])
+        pygame.draw.circle(screen, (0,0,0), (cx, cy), r, 3)
+        for i in range(dividers):
+            gfxdraw.pie(screen, cx, cy, r, i*divs, divs, (0,0,0))
+        i = 1
+        iters = range(1,dividers*2, 2)
+        for i in iters:
+            textChoice = font.render(resultlist[iters.index(i)], False, (0,0,0))
+            textWidth = textChoice.get_rect().width
+            textHeight = textChoice.get_rect().height
+            textChoice = pygame.transform.rotate(textChoice,(i-(2*i))*(360/(dividers*2)))
+            textwidth = textChoice.get_rect().width
+            textheight = textChoice.get_rect().height
+            screen.blit(textChoice,(
+                                (cx-(textwidth/2))
+                                +((r-100)*math.cos(((i*(360/(dividers*2))))*radconv)),
+                                (cy-(textheight/2))
+                                +((r-100)*math.sin(((i*(360/(dividers*2))))*radconv))
+                                )
+                            )
+            textChoice = ''
+
+        running = spinner.rotate(screen)
+
         recorder.add_frame()
         clock.tick(FPS)
         # Used here to limit the size of the GIF, not necessary for normal usage. **For this purpose must be under discord 8mb limit
         n_frames -= 1
-        if spinner.spinning == False:
-            for i in range(24):
-                recorder.add_frame()
-            print('stopped')
-            break
+
+        
+        
+        pygame.display.flip()
+        
+    for i in range(24):
+        recorder.add_frame()
+        
     recorder.save()
-    getWinner(spinner.total_degrees_spun)
+    
     pygame.quit()
