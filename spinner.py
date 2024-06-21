@@ -37,6 +37,18 @@ class Spinner():
                 #do more complex quit process
                 return False
             return True
+        
+def getWinner(list, degrees):
+    #result list order does not correlate to the place on wheel for some reason
+    temp = []
+    for i in range(len(list)-1):
+        temp.append(list.pop(-2))
+    temp.append(list.pop())
+    print(temp)
+    sliceAngle = 360 / len(temp)
+
+    print((degrees / sliceAngle)%7)
+
 if __name__ == "__main__":
     FPS = 24
     #init pygame & recorder
@@ -113,5 +125,5 @@ if __name__ == "__main__":
         recorder.add_frame()
         
     recorder.save()
-    
+    getWinner(resultlist, spinner.degrees)
     pygame.quit()
