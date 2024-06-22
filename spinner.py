@@ -13,8 +13,8 @@ class Spinner():
         self.surf = surf = pygame.Surface((100,100))
         self.surf.fill((255,255,255))
         self.surf.set_colorkey((255,255,255))
-        self.surf = pygame.image.load('cool.png').convert_alpha()
-        self.where = 180, 10
+        self.surf = pygame.image.load('arrow.png').convert_alpha()
+        self.where = 10, 180
         self.rotation_speed = random.randint(15,30)
         self.last_animated = 0
     
@@ -39,15 +39,13 @@ class Spinner():
             return True
         
 def getWinner(list, degrees):
-    #result list order does not correlate to the place on wheel for some reason
-    temp = []
-    for i in range(len(list)-1):
-        temp.append(list.pop(-2))
-    temp.append(list.pop())
-    print(temp)
-    sliceAngle = 360 / len(temp)
+    #TODO issue is probably that the sections don't start cleanly at 0 degrees, need to figure out how to calculate the offset
+    
+    sliceAngle = 360 / len(list)
 
-    print((degrees / sliceAngle)%7)
+    ind = int((degrees%360) // sliceAngle)
+    print(list[ind])
+    
 
 if __name__ == "__main__":
     FPS = 24
@@ -125,5 +123,5 @@ if __name__ == "__main__":
         recorder.add_frame()
         
     recorder.save()
-    getWinner(resultlist, spinner.degrees)
+    getWinner(list(reversed(resultlist)), spinner.degrees)
     pygame.quit()
