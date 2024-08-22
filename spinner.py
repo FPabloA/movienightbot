@@ -6,6 +6,7 @@ import math
 
 #adapting code from Itisz DecisionWheel: https://github.com/ltisz/DecisionWheel
 valueList = ["test", "rehersal", "trial", "practice", "experiment", 'one', 'two']
+winner = None
 
 class Spinner():
     def __init__(self):
@@ -17,6 +18,7 @@ class Spinner():
         self.where = 10, 180
         self.rotation_speed = random.randint(15,30)
         self.last_animated = 0
+
     
     def update(self, screen):
         self.blittedRect = screen.blit(self.surf, self.where)
@@ -38,16 +40,20 @@ class Spinner():
                 return False
             return True
         
-def getWinner(list, degrees):
-    #TODO issue is probably that the sections don't start cleanly at 0 degrees, need to figure out how to calculate the offset
-    
+def calcWinner(list, degrees):
+    global winner
     sliceAngle = 360 / len(list)
 
     ind = int((degrees%360) // sliceAngle)
-    print(list[ind])
+    winner = (list[ind])
+
+def getWinner():
+    global winner
+    return winner
     
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
+def main():
     FPS = 24
     #init pygame & recorder
     recorder = PygameRecord('output.gif', FPS)
@@ -123,5 +129,5 @@ if __name__ == "__main__":
         recorder.add_frame()
         
     recorder.save()
-    getWinner(list(reversed(resultlist)), spinner.degrees)
+    calcWinner(list(reversed(resultlist)), spinner.degrees)
     pygame.quit()
