@@ -7,6 +7,7 @@ import math
 #adapting code from Itisz DecisionWheel: https://github.com/ltisz/DecisionWheel
 #valueList = ["test", "rehersal", "trial", "practice", "experiment", 'one', 'two']
 winner = None
+frames = 0
 
 class Spinner():
     def __init__(self):
@@ -49,12 +50,15 @@ def calcWinner(list, degrees):
 
 def getWinner():
     global winner
-    return winner
+    global frames
+    return winner, frames
     
 
 #if __name__ == "__main__":
 def main(values):
     valueList = list(map(str.strip, values.split(',')))
+    global frames
+    frames = 0
     FPS = 24
     #init pygame & recorder
     recorder = PygameRecord('output.gif', FPS)
@@ -118,6 +122,7 @@ def main(values):
         running = spinner.rotate(screen)
 
         recorder.add_frame()
+        frames += 1
         clock.tick(FPS)
         # Used here to limit the size of the GIF, not necessary for normal usage. **For this purpose must be under discord 8mb limit
         n_frames -= 1
@@ -128,7 +133,7 @@ def main(values):
         
     for i in range(24):
         recorder.add_frame()
-        
+    #print(frames)
     recorder.save()
     calcWinner(list(reversed(resultlist)), spinner.degrees)
     pygame.quit()

@@ -41,15 +41,16 @@ if __name__ == "__main__":
                 await message.channel.send("do wheel")
                 valueList = message.content[6:]
                 spinner.main(valueList)
-                winner = spinner.getWinner()
+                winner, numframes = spinner.getWinner()
                 file = discord.File("output.gif")
                 e = discord.Embed()
                 e.set_image(url="attachment://output.gif")
                 await message.channel.send(file=file, embed=e)
                 #TODO need more consistent way to wait unti gif finishes
-                time.sleep(10)
+                time.sleep(numframes//24 + 2)
                 await message.channel.send(winner)
+                
             else:
-                await message.channel.send("Command not recognized, Proper usage:")
+                await message.channel.send("Command not recognized, Proper usage: !wheel [list of values separated w/ commas]")
 
     client.run(TOKEN)
