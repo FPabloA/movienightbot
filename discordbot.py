@@ -37,9 +37,10 @@ if __name__ == "__main__":
         #message is a command
         if message.content.startswith('!'):
             #generate wheel and send
-            if message.content == "!wheel":
+            if message.content[0:6] == "!wheel":
                 await message.channel.send("do wheel")
-                spinner.main()
+                valueList = message.content[6:]
+                spinner.main(valueList)
                 winner = spinner.getWinner()
                 file = discord.File("output.gif")
                 e = discord.Embed()

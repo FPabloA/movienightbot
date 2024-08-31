@@ -5,7 +5,7 @@ import random
 import math
 
 #adapting code from Itisz DecisionWheel: https://github.com/ltisz/DecisionWheel
-valueList = ["test", "rehersal", "trial", "practice", "experiment", 'one', 'two']
+#valueList = ["test", "rehersal", "trial", "practice", "experiment", 'one', 'two']
 winner = None
 
 class Spinner():
@@ -53,7 +53,8 @@ def getWinner():
     
 
 #if __name__ == "__main__":
-def main():
+def main(values):
+    valueList = list(map(str.strip, values.split(',')))
     FPS = 24
     #init pygame & recorder
     recorder = PygameRecord('output.gif', FPS)
